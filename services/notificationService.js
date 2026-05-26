@@ -1,103 +1,76 @@
-const Notification = require("../models/Notification");
-const { sendEmail } = require("./email");
+const express = require("express");
+const router = express.Router();
+const { restrictToLoggedInUserOnly } = require("../middlewares/authentication");
+const NotificationService = require("../services/notificationService");
 
-class NotificationService {
-    // Create in-app notification
-    static async createNotification(recipientId, type, data) {
-        try {
-            const notification = await Notification.create({
-                recipient: recipientId,
-                type,
-                title: data.title,
-                message: data.message,
-                blog: data.blog || null,
-                actor: data.actor || null
-            });
-            return notification;
-        } catch (error) {
-            console.error("❌ Error creating notification:", error);
-        }
+router.use(restrictToLoggedInUserOnly);
+
+// ====================== GET UNREAD COUNT (MUST BE FIRST) ======================
+router.get("/unread/count", async (req, res) => {
+    try {
+        const count = await NotificationService.getUnreadCount(req.user._id);
+        res.json({ success: true, unreadCount: count });
+    } catch (error) {
+        console.error("❌ Error getting unread count:", error);
+        res.status(500).json({ success: false, message: "Failed to get unread count" });
     }
+});
 
-    // Send Email Notification
-    static async sendEmailNotification(user, type, data) {
-        try {
-            if (!user?.notificationSettings) return;
+// ====================== GET USER NOTIFICATIONS ======================
+router.get("/", async (req, res) => {
+    try {
+        const { page = 1 } = req.query;
 
-            const settingsMap = {
-                comment: "emailOnComment",
-                reply: "emailOnComment",
-                like: "emailOnLike",
-                follow: "emailOnNewFollower"
-            };
-
-            const settingKey = settingsMap[type];
-            if (settingKey && !user.notificationSettings[settingKey]) {
-                return; // User disabled this type
-            }
-
-            const templates = {
-                comment: {
-                    subject: `New comment on "${data.blogTitle || 'your blog'}"`,
-                    body: `<p><strong>${data.actorName}</strong> commented on your blog:</p>
-                           <p>"${data.comment ? data.comment.substring(0, 150) : ''}..."</p>`
-                },
-                like: {
-                    subject: `Someone liked your blog`,
-                    body: `<p><strong>${data.actorName}</strong> liked your blog "${data.blogTitle || ''}"</p>`
-                },
-                follow: {
-                    subject: `New Follower`,
-                    body: `<p><strong>${data.actorName}</strong> started following you.</p>`
-                }
-            };
-
-            const template = templates[type] || templates.comment;
-
-            await sendEmail(user.email, template.subject, template.body);
-        } catch (error) {
-            console.error("❌ Error sending email notification:", error);
-        }
-    }
-
-    // Get notifications
-    static async getUserNotifications(userId, limit = 10, page = 1) {
-        try {
-            const skip = (page - 1) * limit;
-            
-            const notifications = await Notification.find({ recipient: userId })
-                .sort({ createdAt: -1 })
-                .limit(limit)
-                .skip(skip)
-                .populate("actor", "fullName profileImageURL")
-                .populate("blog", "title");
-
-            const total = await Notification.countDocuments({ recipient: userId });
-
-            return { notifications, total, pages: Math.ceil(total / limit) };
-        } catch (error) {
-            console.error("❌ Error getting notifications:", error);
-            return { notifications: [], total: 0, pages: 0 };
-        }
-    }
-
-    static async markAsRead(notificationId) {
-        await Notification.findByIdAndUpdate(notificationId, { isRead: true });
-    }
-
-    static async markAllAsRead(userId) {
-        await Notification.updateMany(
-            { recipient: userId, isRead: false },
-            { isRead: true }
+        const result = await NotificationService.getUserNotifications(
+            req.user._id,
+            10,
+            parseInt(page)
         );
-    }
 
-    static async getUnreadCount(userId) {
-        return await Notification.countDocuments({ 
-            recipient: userId, 
-            isRead: false 
+        res.json({
+            success: true,
+            notifications: result.notifications,
+            total: result.total,
+            pages: result.pages,
+            currentPage: parseInt(page)
         });
+    } catch (error) {
+        console.error("❌ Error fetching notifications:", error);
+        res.status(500).json({ success: false, message: "Failed to fetch notifications" });
     }
-}
+});
 
-module.exports = NotificationService;
+// ====================== MARK ALL AS READ ======================
+router.put("/all/read", async (req, res) => {
+    try {
+        await NotificationService.markAllAsRead(req.user._id);
+        res.json({ success: true, message: "All marked as read" });
+    } catch (error) {
+        console.error("❌ Error marking all as read:", error);
+        res.status(500).json({ success: false, message: "Failed to mark all as read" });
+    }
+});
+
+// ====================== MARK AS READ (MUST BE LAST) ======================
+router.put("/:notificationId/read", async (req, res) => {
+    try {
+        // Validate notification exists and belongs to user
+        const notification = await require("../models/Notification").findById(req.params.notificationId);
+        
+        if (!notification) {
+            return res.status(404).json({ success: false, message: "Notification not found" });
+        }
+
+        if (notification.recipient.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: "Unauthorized" });
+        }
+
+        await NotificationService.markAsRead(req.params.notificationId);
+        res.json({ success: true, message: "Marked as read" });
+    } catch (error) {
+        console.error("❌ Error marking notification as read:", error);
+        res.status(500).json({ success: false, message: "Failed to mark as read" });
+    }
+});
+
+module.exports = router;
