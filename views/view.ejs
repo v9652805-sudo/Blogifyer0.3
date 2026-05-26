@@ -3,15 +3,50 @@
 <head>
     <%- include("./partials/head") %>
     <title><%= blog.title %> | Blogify</title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    
     <style>
-        .blog-container {
-            max-width: 800px;
+        .blog-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            margin-bottom: 40px;
+            border-radius: 0;
         }
 
-        /* ========== IMPROVED TEXT SPACING ========== */
+        .blog-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 0 0 20px 0;
+            line-height: 1.2;
+        }
+
+        .blog-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+        }
+
+        .blog-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .reading-time {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+
+        .blog-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Blog Content Styling */
         .blog-content {
             font-size: 1.1rem;
             line-height: 2;
@@ -29,32 +64,11 @@
             line-height: 1.3;
         }
 
-        .blog-content h1 {
-            font-size: 2.5rem;
-            margin-top: 5rem;
-            margin-bottom: 2.5rem;
-        }
+        .blog-content h1 { font-size: 2.5rem; margin-top: 5rem; }
+        .blog-content h2 { font-size: 2rem; margin-top: 4.5rem; padding-top: 1.5rem; border-top: 2px solid #f0f0f0; }
+        .blog-content h3 { font-size: 1.5rem; margin-top: 3rem; }
+        .blog-content h4, .blog-content h5, .blog-content h6 { margin-top: 2.5rem; margin-bottom: 1.5rem; }
 
-        .blog-content h2 {
-            font-size: 2rem;
-            margin-top: 4.5rem;
-            margin-bottom: 2rem;
-            padding-top: 1.5rem;
-            border-top: 2px solid #f0f0f0;
-        }
-
-        .blog-content h3 {
-            font-size: 1.5rem;
-            margin-top: 3rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .blog-content h4, .blog-content h5, .blog-content h6 {
-            margin-top: 2.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        /* Enhanced paragraph spacing - CRITICAL */
         .blog-content p {
             margin-bottom: 2.5rem;
             margin-top: 0;
@@ -63,27 +77,6 @@
             padding: 0;
         }
 
-        .blog-content p + p {
-            margin-top: 2rem;
-        }
-
-        .blog-content p + pre,
-        .blog-content h1 + pre,
-        .blog-content h2 + pre,
-        .blog-content h3 + pre {
-            margin-top: 3rem;
-        }
-
-        /* Spacing AFTER code blocks */
-        .code-block-wrapper + p,
-        .code-block-wrapper + h2,
-        .code-block-wrapper + h3,
-        .code-block-wrapper + ul,
-        .code-block-wrapper + ol {
-            margin-top: 3rem;
-        }
-
-        /* List improvements */
         .blog-content ul, .blog-content ol {
             margin: 3rem 0;
             padding-left: 2.5rem;
@@ -95,11 +88,6 @@
             margin-left: 0.5rem;
         }
 
-        .blog-content li + li {
-            margin-top: 1.5rem;
-        }
-
-        /* Blockquote improvements */
         .blog-content blockquote {
             margin: 3rem 0;
             padding: 2rem;
@@ -116,31 +104,9 @@
             margin: 3rem 0;
             border-radius: 8px;
             display: block;
-            clear: both;
         }
 
-        .blog-content table {
-            margin: 3rem 0;
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .blog-content table th,
-        .blog-content table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .blog-content table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-        }
-
-        /* =========================================================
-           CODE BLOCK WRAPPER - FIXED LAYOUT
-           Dark box + badge + footer + enhanced scrolling
-           ========================================================= */
+        /* Code Block Styling */
         .code-block-wrapper {
             position: relative;
             background: #1e1e1e;
@@ -151,29 +117,8 @@
             border: 1px solid #2d2d2d;
             display: flex;
             flex-direction: column;
-            clear: both;
         }
-        
-        /* Language badge top-left */
-        .code-lang-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #2d2d2d, #3a3a3a);
-            color: #e0e0e0;
-            font-family: 'Fira Code', Consolas, Monaco, monospace;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 8px 16px;
-            border-bottom-right-radius: 8px;
-            border-top-left-radius: 12px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            z-index: 10;
-            position: relative;
-            align-self: flex-start;
-            margin: 0;
-        }
-        
-        /* Scrollable code area - Support for 10,000+ lines */
+
         .blog-content pre {
             background-color: #1e1e1e !important;
             padding: 1.5rem;
@@ -181,665 +126,566 @@
             border-radius: 0;
             box-shadow: none;
             border: none;
-            
-            max-height: 600px !important; 
+            max-height: 600px !important;
             overflow-y: scroll !important;
             overflow-x: auto !important;
             display: block;
             flex-grow: 1;
-            
-            will-change: transform;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior: contain;
-            contain: paint layout style;
             scroll-behavior: smooth;
         }
 
-        /* Enhanced scrollbar styling */
         .blog-content pre::-webkit-scrollbar {
             width: 12px;
-            height: 12px;
+            height: 8px;
         }
 
         .blog-content pre::-webkit-scrollbar-track {
-            background: #1e1e1e;
-            border-radius: 0;
+            background: #2d2d2d;
+            border-radius: 10px;
         }
 
         .blog-content pre::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #3c3c3c, #4b4b4b);
-            border-radius: 6px;
-            border: 2px solid #1e1e1e;
+            background: #6366f1;
+            border-radius: 10px;
         }
 
         .blog-content pre::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #4b4b4b, #5a5a5a);
+            background: #764ba2;
         }
 
-        /* Firefox scrollbar */
-        .blog-content pre {
-            scrollbar-width: thin;
-            scrollbar-color: #3c3c3c #1e1e1e;
-        }
-        
-        /* Code typography */
-        .blog-content pre code {
-            font-family: 'Fira Code', 'Monaco', 'Consolas', 'Courier New', monospace !important;
-            font-size: 0.85rem;
-            background-color: transparent !important;
-            padding: 0;
-            display: block;
-            line-height: 1.6;
-            tab-size: 4;
-            -moz-tab-size: 4;
-            white-space: pre !important; 
-            word-break: normal !important;
-            word-wrap: normal !important;
-            color: #d4d4d4;
-            margin: 0;
-        }
-
-        /* Footer bar */
-        .code-footer {
+        /* Author Section */
+        .author-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 60px 0 40px 0;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(90deg, #1e1e1e, #222222);
-            padding: 12px 16px;
-            border-top: 1px solid #2d2d2d;
-            font-size: 0.75rem;
-            color: #9e9e9e;
-            z-index: 10;
-            position: relative;
-            flex-shrink: 0;
-        }
-        
-        .code-footer .caution-text {
-            font-style: italic;
-            font-size: 0.75rem;
+            gap: 20px;
+            border: 1px solid #e2e8f0;
         }
 
-        .code-footer .line-count {
-            font-size: 0.75rem;
-            color: #6a6a6a;
-            margin: 0 10px;
+        .author-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #6366f1;
         }
-        
-        .code-footer .copy-btn {
-            background: transparent;
-            border: 1px solid #3c3c3c;
-            color: #9e9e9e;
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.75rem;
-            font-weight: 500;
+
+        .author-info h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.2rem;
+            color: #1e293b;
+        }
+
+        .author-info p {
+            margin: 5px 0;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .author-actions {
             margin-left: auto;
         }
 
-        .code-footer .copy-btn:hover {
-            background: #2d2d2d;
-            color: #fff;
-            border-color: #4a4a4a;
+        .author-actions button {
+            margin-left: 10px;
         }
 
-        .code-footer .copy-btn.copied {
-            color: #4ade80;
-            border-color: #4ade80;
+        /* Blog Actions Section */
+        .blog-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            margin: 40px 0;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        /* ========== VIBRANT SYNTAX COLORS ========== */
-        .hljs {
-            color: #d4d4d4 !important;
-            background-color: transparent !important;
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        /* Keywords - Purple */
-        .hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-builtin-name { 
-            color: #c586c0 !important; 
-            font-weight: normal; 
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #64748b;
         }
 
-        /* Strings - Orange */
-        .hljs-string, .hljs-meta .hljs-string { 
-            color: #ce9178 !important; 
+        .action-btn:hover {
+            background: #f8f9fa;
+            border-color: #6366f1;
+            color: #6366f1;
         }
 
-        /* Function names and titles - Yellow */
-        .hljs-title, .hljs-section, .hljs-function, .hljs-function-name { 
-            color: #dcdcaa !important; 
+        .action-btn.active {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
         }
 
-        /* Variables - Blue */
-        .hljs-variable, .hljs-template-variable, .hljs-params, .hljs-name { 
-            color: #9cdcfe !important; 
+        .action-btn i {
+            font-size: 1.1rem;
         }
 
-        /* Comments - Green */
-        .hljs-comment, .hljs-quote { 
-            color: #6a9955 !important; 
-            font-style: italic; 
+        .tags-section {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
-        /* Numbers and attributes - Light Blue */
-        .hljs-attr, .hljs-number, .hljs-literal { 
-            color: #9cdcfe !important; 
+        .tag {
+            background: #f1f5f9;
+            color: #6366f1;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
         }
 
-        /* Tags - Blue */
-        .hljs-tag, .hljs-type, .hljs-doctag { 
-            color: #569cd6 !important; 
+        .tag:hover {
+            background: #6366f1;
+            color: white;
         }
 
-        /* Properties - Teal */
-        .hljs-property, .hljs-regexp, .hljs-symbol { 
-            color: #4ec9b0 !important; 
+        /* Comments Section */
+        .comments-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid #f0f0f0;
         }
 
-        /* Operators */
-        .hljs-operator {
-            color: #d4d4d4 !important;
+        .comments-section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: #1e293b;
         }
 
-        /* Language specific */
-        .hljs-meta {
-            color: #9cdcfe !important;
+        .comment-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
         }
 
-        .hljs-literal {
-            color: #569cd6 !important;
+        .comment-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
         }
 
-        /* Inline code in paragraphs */
-        .blog-content p code,
-        .blog-content li code,
-        .blog-content td code {
-            background-color: #f1f3f5;
-            color: #d63384;
-            border-radius: 4px;
-            padding: 0.3rem 0.6rem;
-            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
-            font-size: 0.85em;
-            border: 1px solid #e9ecef;
+        .comment-form button {
+            margin-top: 15px;
         }
 
-        .sidebar-widget {
-            position: sticky;
-            top: 100px;
+        .comment {
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: white;
         }
 
-        /* Responsive adjustments */
+        .comment-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .comment-author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .comment-author-info {
+            flex: 1;
+        }
+
+        .comment-author-info strong {
+            display: block;
+            color: #1e293b;
+        }
+
+        .comment-author-info small {
+            color: #94a3b8;
+        }
+
+        .comment-content {
+            color: #475569;
+            line-height: 1.6;
+            margin: 12px 0;
+        }
+
+        /* Related Blogs */
+        .related-section {
+            margin-top: 80px;
+            padding-top: 40px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .related-section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: #1e293b;
+        }
+
+        .related-blogs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .related-blog-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .related-blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .related-blog-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .related-blog-content {
+            padding: 15px;
+        }
+
+        .related-blog-content h4 {
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+            color: #1e293b;
+            line-height: 1.4;
+        }
+
+        .related-blog-content p {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.85rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
         @media (max-width: 768px) {
-            .blog-content {
-                font-size: 1rem;
-                line-height: 1.9;
-            }
-
-            .blog-content h1 {
-                font-size: 1.8rem;
-                margin-top: 3rem;
-            }
-
-            .blog-content h2 {
-                font-size: 1.5rem;
-                margin-top: 2.5rem;
-            }
-
-            .blog-content p {
-                margin-bottom: 1.5rem;
-                line-height: 1.8;
-            }
-
-            .blog-content pre {
-                max-height: 500px !important;
-                padding: 1rem !important;
-            }
-
-            .code-footer {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .code-footer .copy-btn {
-                margin-left: 0;
-                align-self: flex-end;
-            }
-
-            .code-lang-badge {
-                font-size: 0.8rem;
-                padding: 6px 12px;
-            }
+            .blog-header h1 { font-size: 2rem; }
+            .blog-meta { flex-direction: column; align-items: flex-start; }
+            .author-section { flex-direction: column; }
+            .author-actions { margin-left: 0; width: 100%; }
+            .blog-actions { flex-direction: column; align-items: flex-start; }
+            .action-buttons { width: 100%; }
         }
     </style>
 </head>
 <body>
     <%- include("./partials/nave") %>
 
-    <article class="container my-5">
-        <div class="row">
-            <div class="col-lg-8">
-                <a href="/" class="btn btn-outline-primary btn-sm mb-4">
-                    <i class="fas fa-arrow-left"></i> Back to Home
-                </a>
-
-                <div class="mb-5">
-                    <h1 class="display-5 fw-bold mb-3"><%= blog.title %></h1>
-
-                    <div class="d-flex align-items-center justify-content-between py-3 border-top border-bottom">
-                        <div class="d-flex align-items-center gap-3">
-                            <img src="<%= blog.createdBy.profileImageURL %>" 
-                                 alt="<%= blog.createdBy.fullName %>" 
-                                 width="48" height="48" 
-                                 class="rounded-circle"
-                                 onerror="this.src='/imgs/default.png';">
-                            <div>
-                                <a href="#" class="fw-bold text-decoration-none" id="authorLink">
-                                    <%= blog.createdBy.fullName %>
-                                </a>
-                                <div class="small text-muted">
-                                    <%= formatDate(blog.createdAt) %> 
-                                    <% if (blog.readingTime) { %>
-                                        • <%= blog.readingTime %> min read
-                                    <% } %>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex gap-2">
-                            <% if (locals.user && locals.user._id == blog.createdBy._id) { %>
-                                <a href="/blogs/<%= blog._id %>/edit" class="btn btn-outline-secondary btn-sm">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a>
-                                <button class="btn btn-outline-danger btn-sm" onclick="deleteBlog('<%= blog._id %>')">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            <% } %>
-                        </div>
-                    </div>
+    <!-- Blog Header -->
+    <div class="blog-header">
+        <div class="blog-container">
+            <h1><%= blog.title %></h1>
+            <div class="blog-meta">
+                <div class="blog-meta-item">
+                    <img src="<%= blog.createdBy?.profileImageURL || '/imgs/default.png' %>" 
+                         alt="<%= blog.createdBy?.fullName %>" 
+                         width="36" height="36" 
+                         class="rounded-circle"
+                         onerror="this.src='/imgs/default.png';">
+                    <span><%= blog.createdBy?.fullName %></span>
                 </div>
-
-                <% if (blog.coverImageURL) { %>
-                    <img src="<%= blog.coverImageURL %>" 
-                         alt="<%= blog.title %>" 
-                         class="img-fluid rounded-3 mb-5 shadow-sm"
-                         onerror="this.src='/images/default-blog.png';">
-                <% } %>
-
-                <div class="blog-content mb-5">
-                    <%- renderMarkdown(blog.body) %>
+                <div class="blog-meta-item">
+                    📅 <%= formatDate(blog.createdAt) %>
                 </div>
-
-                <% if (blog.tags && blog.tags.length > 0) { %>
-                    <div class="mb-5 pb-4 border-bottom">
-                        <h6 class="fw-bold mb-3">Tags</h6>
-                        <div>
-                            <% blog.tags.forEach(tag => { %>
-                                <a href="/blogs/tags/<%= tag %>" class="btn btn-sm btn-outline-primary me-2 mb-2">
-                                    #<%= tag %>
-                                </a>
-                            <% }) %>
-                        </div>
-                    </div>
-                <% } %>
-
-                <div class="d-flex gap-3 py-4 border-top border-bottom">
-                    <button class="btn btn-outline-danger" id="likeBtn" onclick="toggleLike()">
-                        <i class="fas fa-heart <%= hasLiked ? 'fas' : 'far' %>"></i>
-                        <span id="likeCount"><%= blog.likes ? blog.likes.length : 0 %></span>
-                        Like
-                    </button>
-                    <button class="btn btn-outline-primary" id="shareBtn">
-                        <i class="fas fa-share-alt"></i> Share
-                    </button>
+                <div class="reading-time">
+                    ⏱️ <%= blog.readingTime || 5 %> min read
                 </div>
-
-                <div class="mt-5">
-                    <h4 class="fw-bold mb-4">
-                        <i class="fas fa-comments"></i> Comments
-                    </h4>
-
-                    <% if (locals.user) { %>
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h6 class="fw-bold mb-3">Leave a Comment</h6>
-                                <form id="commentForm">
-                                    <textarea class="form-control mb-3" id="commentContent" 
-                                              rows="3" placeholder="Share your thoughts..."
-                                              required></textarea>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-comment"></i> Post Comment
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    <% } else { %>
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i> 
-                            <a href="/user/signin">Sign in</a> to leave a comment
-                        </div>
-                    <% } %>
-
-                    <div id="commentsList"></div>
+                <div class="blog-meta-item">
+                    👁️ <%= blog.viewCount || 0 %> views
                 </div>
-            </div>
-
-            <div class="col-lg-4 mt-5 mt-lg-0">
-                <div class="card shadow-sm sidebar-widget mb-4">
-                    <div class="card-body">
-                        <div class="text-center mb-3">
-                            <img src="<%= blog.createdBy.profileImageURL %>" 
-                                 alt="<%= blog.createdBy.fullName %>" 
-                                 width="80" height="80" 
-                                 class="rounded-circle mb-3"
-                                 onerror="this.src='/imgs/default.png';">
-                            <h5 class="fw-bold"><%= blog.createdBy.fullName %></h5>
-                            <p class="text-muted small mb-3"><%= blog.createdBy.bio || 'Blogger' %></p>
-                        </div>
-
-                        <div class="d-flex justify-content-around text-center mb-3">
-                            <div>
-                                <h6 class="fw-bold">0</h6>
-                                <small class="text-muted">Followers</small>
-                            </div>
-                            <div>
-                                <h6 class="fw-bold">0</h6>
-                                <small class="text-muted">Following</small>
-                            </div>
-                        </div>
-
-                        <% if (locals.user && locals.user._id != blog.createdBy._id) { %>
-                            <button class="btn btn-primary w-100" id="followBtn" onclick="toggleFollow()">
-                                <i class="fas fa-user-plus"></i> Follow
-                            </button>
-                        <% } %>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm sidebar-widget mb-4">
-                    <div class="card-body">
-                        <h6 class="fw-bold mb-3">Stats</h6>
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="text-muted"><i class="fas fa-eye"></i> Views</span>
-                            <strong><%= blog.viewCount || 0 %></strong>
-                        </div>
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="text-muted"><i class="fas fa-heart"></i> Likes</span>
-                            <strong><%= blog.likes ? blog.likes.length : 0 %></strong>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-muted"><i class="fas fa-comment"></i> Comments</span>
-                            <strong id="commentCount">0</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <% if (typeof relatedBlogs !== 'undefined' && relatedBlogs.length > 0) { %>
-                    <div class="card shadow-sm sidebar-widget">
-                        <div class="card-body">
-                            <h6 class="fw-bold mb-3">Related Articles</h6>
-                            <% relatedBlogs.forEach(relatedBlog => { %>
-                                <a href="/blogs/<%= relatedBlog._id %>" class="text-decoration-none d-block mb-2 p-2" style="border-left: 3px solid #6366f1; padding-left: 1rem;">
-                                    <small class="fw-bold text-dark">
-                                        <%= truncate(relatedBlog.title, 50) %>
-                                    </small>
-                                </a>
-                            <% }) %>
-                        </div>
-                    </div>
-                <% } %>
             </div>
         </div>
-    </article>
+    </div>
+
+    <!-- Main Content -->
+    <div class="blog-container">
+        <!-- Cover Image -->
+        <% if (blog.coverImageURL) { %>
+            <img src="<%= blog.coverImageURL %>" alt="<%= blog.title %>" 
+                 style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; margin-bottom: 40px;">
+        <% } %>
+
+        <!-- Blog Content -->
+        <article class="blog-content">
+            <%- renderMarkdown(blog.body) %>
+        </article>
+
+        <!-- Blog Actions -->
+        <div class="blog-actions">
+            <div class="action-buttons">
+                <button class="action-btn" id="likeBtn" onclick="toggleLike()">
+                    <i class="far fa-heart"></i>
+                    <span id="likeCount"><%= blog.likes?.length || 0 %></span>
+                </button>
+                <button class="action-btn" onclick="document.getElementById('commentForm').scrollIntoView({ behavior: 'smooth' })">
+                    <i class="far fa-comment"></i>
+                    <span><%= blog.comments?.length || 0 %></span>
+                </button>
+                <button class="action-btn" onclick="sharePost()">
+                    <i class="fas fa-share"></i>
+                    Share
+                </button>
+            </div>
+
+            <% if (blog.tags && blog.tags.length > 0) { %>
+                <div class="tags-section">
+                    <% blog.tags.forEach(tag => { %>
+                        <a href="/?search=<%= tag %>" class="tag"><%= tag %></a>
+                    <% }) %>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Author Section -->
+        <div class="author-section">
+            <img src="<%= blog.createdBy?.profileImageURL || '/imgs/default.png' %>" 
+                 alt="<%= blog.createdBy?.fullName %>" 
+                 class="author-avatar"
+                 onerror="this.src='/imgs/default.png';">
+            
+            <div class="author-info">
+                <h4><%= blog.createdBy?.fullName %></h4>
+                <p><%= blog.createdBy?.bio || 'A passionate blogger' %></p>
+            </div>
+
+            <% if (locals.user && locals.user._id != blog.createdBy._id) { %>
+                <div class="author-actions">
+                    <button class="btn btn-outline-primary btn-sm" onclick="toggleFollow('<%= blog.createdBy._id %>', this)">
+                        <i class="fas fa-user-plus"></i> Follow
+                    </button>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section">
+            <h3><i class="fas fa-comments"></i> Comments</h3>
+
+            <% if (locals.user) { %>
+                <div class="comment-form" id="commentForm">
+                    <form id="commentFormElement" onsubmit="submitComment(event)">
+                        <textarea id="commentContent" placeholder="Share your thoughts..." required></textarea>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Post Comment
+                        </button>
+                    </form>
+                </div>
+            <% } else { %>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> 
+                    <a href="/user/signin">Sign in</a> to leave a comment
+                </div>
+            <% } %>
+
+            <div id="commentsContainer">
+                <!-- Comments will be loaded here -->
+                <p class="text-muted text-center">Loading comments...</p>
+            </div>
+        </div>
+
+        <!-- Related Blogs -->
+        <div class="related-section" id="relatedSection" style="display: none;">
+            <h3><i class="fas fa-lightbulb"></i> You Might Also Like</h3>
+            <div class="related-blogs" id="relatedBlogs"></div>
+        </div>
+    </div>
 
     <%- include("./partials/scripts") %>
 
     <script>
         const blogId = '<%= blog._id %>';
-        const currentUserId = '<%= locals.user ? locals.user._id : "" %>';
+        const userId = '<%= locals.user ? locals.user._id : "" %>';
 
-        /* =========================================================
-           WRAP CODE BLOCKS WITH BADGE + FOOTER + COPY BUTTON
-           Supports all code languages and handles 10,000+ lines
-           ========================================================= */
-        function initCodeBlocks() {
-            document.querySelectorAll('.blog-content pre').forEach(pre => {
-                if (pre.parentElement && pre.parentElement.classList.contains('code-block-wrapper')) return;
+        // Load comments on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadComments();
+            trackView();
+            loadRelatedBlogs();
+        });
 
-                const code = pre.querySelector('code');
-                if (!code) return;
-
-                // Detect language from class: "hljs language-javascript"
-                let lang = 'code';
-                const langMatch = code.className.match(/language-(\w+)/);
-                if (langMatch) {
-                    lang = langMatch[1].toLowerCase();
-                }
-
-                // Count lines for display
-                const lineCount = (code.innerText.match(/\n/g) || []).length + 1;
-
-                const wrapper = document.createElement('div');
-                wrapper.className = 'code-block-wrapper';
-
-                const badge = document.createElement('div');
-                badge.className = 'code-lang-badge';
-                badge.textContent = lang;
-
-                const footer = document.createElement('div');
-                footer.className = 'code-footer';
-                footer.innerHTML = `
-                    <span class="caution-text">Use code with caution.</span>
-                    <span class="line-count">${lineCount} lines</span>
-                    <button class="copy-btn" aria-label="Copy code">
-                        <i class="far fa-copy"></i> <span>Copy</span>
-                    </button>
-                `;
-
-                const copyBtn = footer.querySelector('.copy-btn');
-                copyBtn.addEventListener('click', async () => {
-                    try {
-                        await navigator.clipboard.writeText(code.innerText);
-                        copyBtn.classList.add('copied');
-                        copyBtn.innerHTML = '<i class="fas fa-check"></i> <span>Copied!</span>';
-                        setTimeout(() => {
-                            copyBtn.classList.remove('copied');
-                            copyBtn.innerHTML = '<i class="far fa-copy"></i> <span>Copy</span>';
-                        }, 2000);
-                    } catch (err) {
-                        // Fallback for older browsers
-                        try {
-                            const range = document.createRange();
-                            range.selectNode(code);
-                            window.getSelection().removeAllRanges();
-                            window.getSelection().addRange(range);
-                            document.execCommand('copy');
-                            window.getSelection().removeAllRanges();
-                            copyBtn.classList.add('copied');
-                            copyBtn.innerHTML = '<i class="fas fa-check"></i> <span>Copied!</span>';
-                            setTimeout(() => {
-                                copyBtn.classList.remove('copied');
-                                copyBtn.innerHTML = '<i class="far fa-copy"></i> <span>Copy</span>';
-                            }, 2000);
-                        } catch (fallbackErr) {
-                            console.error('Copy failed:', fallbackErr);
-                        }
-                    }
-                });
-
-                pre.parentNode.insertBefore(wrapper, pre);
-                wrapper.appendChild(badge);
-                wrapper.appendChild(pre);
-                wrapper.appendChild(footer);
-            });
-        }
-
-        async function toggleLike() {
-            if (!currentUserId) {
-                window.location.href = '/user/signin';
-                return;
-            }
+        // Track blog view
+        async function trackView() {
             try {
-                const res = await axios.post(`/blogs/${blogId}/like`);
-                const data = res.data;
-                if (data.success) {
-                    const likeBtn = document.getElementById('likeBtn');
-                    const likeCount = document.getElementById('likeCount');
-                    likeCount.textContent = data.likeCount;
-                    if (data.liked) {
-                        likeBtn.innerHTML = '<i class="fas fa-heart"></i> <span id="likeCount">' + data.likeCount + '</span> Like';
-                        likeBtn.classList.add('btn-danger');
-                        likeBtn.classList.remove('btn-outline-danger');
-                    } else {
-                        likeBtn.innerHTML = '<i class="far fa-heart"></i> <span id="likeCount">' + data.likeCount + '</span> Like';
-                        likeBtn.classList.remove('btn-danger');
-                        likeBtn.classList.add('btn-outline-danger');
-                    }
-                }
+                await axios.post(`/blogs/${blogId}/view`);
             } catch (err) {
-                notify.error('Failed to like blog');
+                console.error('Error tracking view:', err);
             }
         }
 
-        async function toggleFollow() {
-            if (!currentUserId) {
-                window.location.href = '/user/signin';
-                return;
-            }
+        // Load comments
+        async function loadComments(page = 1) {
             try {
-                const res = await axios.post(`/follow/<%= blog.createdBy._id %>/follow`);
-                const data = res.data;
-                if (data.success) {
-                    const followBtn = document.getElementById('followBtn');
-                    if (data.following) {
-                        followBtn.innerHTML = '<i class="fas fa-user-check"></i> Following';
-                        followBtn.classList.add('btn-success');
-                        followBtn.classList.remove('btn-primary');
-                    } else {
-                        followBtn.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
-                        followBtn.classList.remove('btn-success');
-                        followBtn.classList.add('btn-primary');
-                    }
-                    notify.success(data.message);
-                }
-            } catch (err) {
-                notify.error('Failed to follow user');
-            }
-        }
+                const response = await axios.get(`/comments/blog/${blogId}?page=${page}`);
+                const data = response.data;
 
-        async function loadComments() {
-            try {
-                const res = await axios.get(`/comments/blog/${blogId}`);
-                const data = res.data;
-                if (data.success) {
-                    document.getElementById('commentCount').textContent = data.total;
-                    const commentsList = document.getElementById('commentsList');
-                    if (data.comments.length === 0) {
-                        commentsList.innerHTML = '<p class="text-muted">No comments yet. Be the first to comment!</p>';
-                        return;
-                    }
-                    commentsList.innerHTML = data.comments.map(comment => `
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div class="d-flex gap-2">
-                                        <img src="${comment.author.profileImageURL}" 
-                                             width="40" height="40" 
-                                             class="rounded-circle"
-                                             onerror="this.src='/imgs/default.png';">
-                                        <div>
-                                            <h6 class="fw-bold mb-0">${comment.author.fullName}</h6>
-                                            <small class="text-muted">${timeAgo(comment.createdAt)}</small>
-                                        </div>
-                                    </div>
-                                    <button class="btn btn-link btn-sm" onclick="toggleCommentLike('${comment._id}')">
-                                        <i class="far fa-heart"></i> ${comment.likeCount || 0}
-                                    </button>
+                if (data.comments && data.comments.length > 0) {
+                    const html = data.comments.map(comment => `
+                        <div class="comment">
+                            <div class="comment-author">
+                                <img src="${comment.author?.profileImageURL || '/imgs/default.png'}" 
+                                     class="comment-author-avatar"
+                                     onerror="this.src='/imgs/default.png';">
+                                <div class="comment-author-info">
+                                    <strong>${comment.author?.fullName}</strong>
+                                    <small>${timeAgo(comment.createdAt)}</small>
                                 </div>
-                                <p class="mb-2">${comment.content}</p>
-                                <button class="btn btn-link btn-sm" onclick="toggleCommentReply('${comment._id}')">
-                                    <i class="fas fa-reply"></i> Reply
-                                </button>
                             </div>
+                            <div class="comment-content">${comment.content}</div>
                         </div>
                     `).join('');
+                    document.getElementById('commentsContainer').innerHTML = html;
+                } else {
+                    document.getElementById('commentsContainer').innerHTML = 
+                        '<p class="text-muted text-center">No comments yet. Be the first to comment!</p>';
                 }
             } catch (err) {
                 console.error('Error loading comments:', err);
+                notify.error('Failed to load comments');
             }
         }
 
-        <% if (locals.user) { %>
-            document.getElementById('commentForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const content = document.getElementById('commentContent').value.trim();
-                if (!content) return;
-                try {
-                    const res = await axios.post(`/comments/blog/${blogId}`, { content });
-                    if (res.data.success) {
-                        document.getElementById('commentContent').value = '';
-                        notify.success('Comment posted successfully!');
-                        loadComments();
-                    }
-                } catch (err) {
-                    notify.error('Failed to post comment');
-                }
-            });
-        <% } %>
+        // Submit comment
+        async function submitComment(event) {
+            event.preventDefault();
+            const content = document.getElementById('commentContent').value;
 
-        document.getElementById('shareBtn').addEventListener('click', () => {
-            const shareData = {
-                title: '<%= blog.title %>',
-                text: 'Check out this amazing blog!',
-                url: window.location.href
-            };
-            if (navigator.share) {
-                navigator.share(shareData);
-            } else {
-                const url = window.location.href;
-                const text = `Check out: ${shareData.title} - ${url}`;
-                if (navigator.clipboard) {
-                    navigator.clipboard.writeText(text);
-                    notify.success('Link copied to clipboard!');
-                }
-            }
-        });
-
-        async function deleteBlog(id) {
-            if (!await confirmAction('Are you sure you want to delete this blog?')) return;
-            try {
-                const res = await axios.delete(`/blogs/${id}`);
-                if (res.data.success) {
-                    notify.success('Blog deleted successfully!');
-                    setTimeout(() => window.location.href = '/', 2000);
-                }
-            } catch (err) {
-                notify.error('Failed to delete blog');
-            }
-        }
-
-        async function toggleCommentLike(commentId) {
-            if (!currentUserId) {
-                window.location.href = '/user/signin';
+            if (!content.trim()) {
+                notify.error('Comment cannot be empty');
                 return;
             }
+
             try {
-                const res = await axios.post(`/comments/${commentId}/like`);
-                if (res.data.success) {
+                const response = await axios.post(`/comments/blog/${blogId}`, { content });
+                if (response.data.success) {
+                    document.getElementById('commentContent').value = '';
                     loadComments();
+                    notify.success('Comment posted successfully!');
                 }
             } catch (err) {
-                notify.error('Failed to like comment');
+                notify.error(err.response?.data?.message || 'Failed to post comment');
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initCodeBlocks();
-            loadComments();
-        });
+        // Toggle like
+        async function toggleLike() {
+            if (!userId) {
+                notify.warning('Please sign in to like this blog');
+                return;
+            }
+
+            try {
+                const response = await axios.post(`/blogs/${blogId}/like`);
+                if (response.data.success) {
+                    document.getElementById('likeCount').textContent = response.data.likeCount;
+                    const btn = document.getElementById('likeBtn');
+                    if (response.data.liked) {
+                        btn.classList.add('active');
+                        btn.innerHTML = '<i class="fas fa-heart"></i> <span id="likeCount">' + response.data.likeCount + '</span>';
+                    } else {
+                        btn.classList.remove('active');
+                        btn.innerHTML = '<i class="far fa-heart"></i> <span id="likeCount">' + response.data.likeCount + '</span>';
+                    }
+                }
+            } catch (err) {
+                notify.error(err.response?.data?.message || 'Failed to like blog');
+            }
+        }
+
+        // Share post
+        function sharePost() {
+            const shareUrl = window.location.href;
+            const shareText = '<%= blog.title %>';
+
+            if (navigator.share) {
+                navigator.share({
+                    title: shareText,
+                    url: shareUrl
+                });
+            } else {
+                const text = `Check out this blog: "${shareText}" ${shareUrl}`;
+                navigator.clipboard.writeText(text);
+                notify.success('Link copied to clipboard!');
+            }
+        }
+
+        // Load related blogs
+        async function loadRelatedBlogs() {
+            try {
+                const tags = '<%= JSON.stringify(blog.tags || []) %>';
+                if (tags && tags.length > 2) {
+                    // Load related blogs by tags
+                    const response = await axios.get(`/?search=${tags[0]}&limit=3`);
+                    // Implementation depends on your backend
+                }
+            } catch (err) {
+                console.error('Error loading related blogs:', err);
+            }
+        }
+
+        // Follow author
+        async function toggleFollow(authorId, btn) {
+            try {
+                const response = await axios.post(`/follow/${authorId}/follow`);
+                if (response.data.success) {
+                    if (response.data.following) {
+                        btn.innerHTML = '<i class="fas fa-user-check"></i> Following';
+                        btn.classList.remove('btn-outline-primary');
+                        btn.classList.add('btn-success');
+                    } else {
+                        btn.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
+                        btn.classList.remove('btn-success');
+                        btn.classList.add('btn-outline-primary');
+                    }
+                    notify.success(response.data.message);
+                }
+            } catch (err) {
+                notify.error(err.response?.data?.message || 'Action failed');
+            }
+        }
     </script>
 </body>
 </html>
+
