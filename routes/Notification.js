@@ -5,6 +5,17 @@ const NotificationService = require("../services/notificationService");
 
 router.use(restrictToLoggedInUserOnly);
 
+// ====================== GET UNREAD COUNT (MUST BE FIRST) ======================
+router.get("/unread/count", async (req, res) => {
+    try {
+        const count = await NotificationService.getUnreadCount(req.user._id);
+        res.json({ success: true, unreadCount: count });
+    } catch (error) {
+        console.error("❌ Error getting unread count:", error);
+        res.status(500).json({ success: false, message: "Failed to get unread count" });
+    }
+});
+
 // ====================== GET USER NOTIFICATIONS ======================
 router.get("/", async (req, res) => {
     try {
@@ -13,7 +24,7 @@ router.get("/", async (req, res) => {
         const result = await NotificationService.getUserNotifications(
             req.user._id,
             10,
-            page
+            parseInt(page)
         );
 
         res.json({
@@ -24,30 +35,8 @@ router.get("/", async (req, res) => {
             currentPage: parseInt(page)
         });
     } catch (error) {
-        console.error("Error fetching notifications:", error);
+        console.error("❌ Error fetching notifications:", error);
         res.status(500).json({ success: false, message: "Failed to fetch notifications" });
-    }
-});
-
-// ====================== GET UNREAD COUNT ======================
-router.get("/unread/count", async (req, res) => {
-    try {
-        const count = await NotificationService.getUnreadCount(req.user._id);
-        res.json({ success: true, unreadCount: count });
-    } catch (error) {
-        console.error("Error getting unread count:", error);
-        res.status(500).json({ success: false, message: "Failed to get unread count" });
-    }
-});
-
-// ====================== MARK AS READ ======================
-router.put("/:notificationId/read", async (req, res) => {
-    try {
-        await NotificationService.markAsRead(req.params.notificationId);
-        res.json({ success: true, message: "Marked as read" });
-    } catch (error) {
-        console.error("Error marking notification as read:", error);
-        res.status(500).json({ success: false, message: "Failed to mark as read" });
     }
 });
 
@@ -57,10 +46,31 @@ router.put("/all/read", async (req, res) => {
         await NotificationService.markAllAsRead(req.user._id);
         res.json({ success: true, message: "All marked as read" });
     } catch (error) {
-        console.error("Error marking all as read:", error);
+        console.error("❌ Error marking all as read:", error);
         res.status(500).json({ success: false, message: "Failed to mark all as read" });
     }
 });
 
-module.exports = router;
+// ====================== MARK AS READ (MUST BE LAST) ======================
+router.put("/:notificationId/read", async (req, res) => {
+    try {
+        // Validate notification exists and belongs to user
+        const notification = await require("../models/Notification").findById(req.params.notificationId);
+        
+        if (!notification) {
+            return res.status(404).json({ success: false, message: "Notification not found" });
+        }
 
+        if (notification.recipient.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: "Unauthorized" });
+        }
+
+        await NotificationService.markAsRead(req.params.notificationId);
+        res.json({ success: true, message: "Marked as read" });
+    } catch (error) {
+        console.error("❌ Error marking notification as read:", error);
+        res.status(500).json({ success: false, message: "Failed to mark as read" });
+    }
+});
+
+module.exports = router;
